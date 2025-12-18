@@ -11,13 +11,10 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
     
     // Generate a random strategy to force diversity
     const strategies = [
-      "JLPT Ngữ pháp (Bunpou): Trợ từ, chia động từ, cấu trúc câu, kính ngữ.",
-      "JLPT Từ vựng (Goi/Kanji): Cách đọc, ý nghĩa, từ gần nghĩa, cách dùng từ.",
-      "JLPT Đọc hiểu (Dokkai): Ý chính, đại từ chỉ định, lý do, nội dung chi tiết.",
       "Tập trung vào các định nghĩa, khái niệm chính và ý nghĩa của chúng.",
       "Tập trung vào mối quan hệ nguyên nhân - kết quả và các lập luận logic.",
       "Chọn ngẫu nhiên các đoạn văn từ giữa hoặc cuối văn bản để đặt câu hỏi.",
-      "Điền từ vào chỗ trống hoặc sắp xếp trật tự từ trong câu (Mondai sắp xếp)."
+      "Điền từ vào chỗ trống hoặc sắp xếp trật tự từ trong câu."
     ];
     const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
     const randomSeed = Math.floor(Math.random() * 1000000);
@@ -29,7 +26,7 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
          - Chọn khía cạnh ngẫu nhiên, TRÁNH trùng lặp.
          - Seed: ${randomSeed}.
          NỘI DUNG: ${source.content.substring(0, contentLimit)}`
-      : `Tạo ${count} câu hỏi trắc nghiệm từ yêu cầu: "${source.content}" (Chiến lược: "${randomStrategy}", Seed: ${randomSeed})`;
+      : `Tạo ${count} câu hỏi trắc nghiệm từ yêu cầu: "${source.content}" (Seed: ${randomSeed})`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -41,13 +38,16 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
       - "questions": mảng các câu hỏi.
       
       QUY ĐỊNH NỘI DUNG:
-      - ƯU TIÊN ĐỊNH DẠNG JLPT nếu nội dung là tiếng Nhật.
-      - TỪ VỰNG/KANJI: Đặt từ cần hỏi trong ngoặc vuông [ ]. Ví dụ: "Cách đọc của [導入] là gì?".
-      - ĐIỀN TỪ/NGỮ PHÁP: Dùng ký hiệu "(___)" để biểu thị chỗ trống. Ví dụ: "熱い(___)に、召し上がってください。".
-      - KHÔNG dùng Markdown (**in đậm**).
-      - Giải thích: Tiếng Việt chi tiết, giải thích ngữ pháp/từ vựng liên quan.
-      - Câu hỏi/Đáp án: Tiếng Nhật (nếu là đề thi tiếng Nhật) hoặc Tiếng Việt.
-      - Kanji/Tiếng Nhật: Kèm Hiragana trong giải thích.
+      - PHÂN TÍCH TÀI LIỆU ĐỂ CHỌN LOẠI CÂU HỎI:
+        1. Nếu là tài liệu học ngoại ngữ (VD: Luyện thi JLPT, TOEIC): Tập trung vào từ vựng, ngữ pháp, đọc hiểu.
+        2. Nếu là tài liệu kiến thức chuyên môn (VD: Lịch sử, Địa lý, IT, Y học...): Tập trung hỏi về kiến thức, sự kiện, khái niệm, logic. KHÔNG hỏi về ngữ pháp/từ vựng.
+      
+      - ĐỊNH DẠNG CHUNG:
+        - TỪ VỰNG (chỉ dùng cho loại 1): Đặt từ cần hỏi trong ngoặc vuông [ ].
+        - ĐIỀN TỪ: Dùng ký hiệu "(___)" để biểu thị chỗ trống.
+        - KHÔNG dùng Markdown (**in đậm**).
+        - Giải thích: Tiếng Việt chi tiết.
+        - Câu hỏi/Đáp án: Giữ nguyên ngôn ngữ của văn bản gốc (hoặc Tiếng Việt nếu văn bản là Tiếng Việt).
       `,
       config: {
         temperature: 0.9,
