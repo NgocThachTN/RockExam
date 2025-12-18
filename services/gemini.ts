@@ -11,23 +11,29 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
     
     let processedContent = source.content;
     if (source.type === 'text' && source.content.length > contentLimit) {
-      // Smart sampling: Take start, middle, and end segments to represent the document better
-      const segmentSize = 20000;
-      const midPoint = Math.floor(source.content.length / 2);
-      processedContent = 
-        source.content.substring(0, segmentSize) + 
-        "\n\n...[ĐOẠN GIỮA]...\n\n" +
-        source.content.substring(midPoint - segmentSize / 2, midPoint + segmentSize / 2) +
-        "\n\n...[ĐOẠN CUỐI]...\n\n" +
-        source.content.substring(source.content.length - segmentSize);
+      // Random sampling: Pick random chunks to ensure different questions each time
+      const chunkSize = 15000;
+      const numChunks = 3;
+      const maxStartIndex = source.content.length - chunkSize;
+      
+      const chunks = [];
+      // Always try to include a bit of the beginning for context
+      chunks.push(source.content.substring(0, 5000)); 
+      
+      for (let i = 0; i < numChunks; i++) {
+          const randomStart = Math.floor(Math.random() * maxStartIndex);
+          chunks.push(source.content.substring(randomStart, randomStart + chunkSize));
+      }
+      
+      processedContent = chunks.join("\n\n... [ĐOẠN TIẾP THEO] ...\n\n");
     }
 
     // Generate a random strategy to force diversity
     const strategies = [
-      "Tập trung vào định nghĩa, khái niệm chính.",
-      "Tập trung vào quan hệ nguyên nhân - kết quả.",
-      "Chọn ngẫu nhiên đoạn văn từ giữa/cuối.",
-      "Điền từ hoặc sắp xếp câu."
+      "Tập trung vào chi tiết nhỏ và các ngoại lệ.",
+      "Tập trung vào quan hệ nguyên nhân - kết quả phức tạp.",
+      "Chọn ngẫu nhiên đoạn văn bất kỳ để hỏi.",
+      "Hỏi về các ứng dụng thực tế hoặc tình huống cụ thể."
     ];
     const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
     const randomSeed = Math.floor(Math.random() * 1000000);
@@ -36,9 +42,13 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
       ? `Tạo ${count} câu hỏi trắc nghiệm.
          CHIẾN LƯỢC: "${randomStrategy}"
          ${source.note ? `GHI CHÚ: "${source.note}" (Ưu tiên cao nhất)` : ''}
-         YÊU CẦU: Chọn ý ngẫu nhiên, TRÁNH trùng lặp. Seed: ${randomSeed}.
+         YÊU CẦU: Chọn ý ngẫu nhiên, TRÁNH trùng lặp. Seed: ${randomSeed}-${Date.now()}.
          NỘI DUNG: ${processedContent}`
-      : `Tạo ${count} câu hỏi từ: "${source.content}" (Seed: ${randomSeed})`;
+      : `Tạo ${count} câu hỏi trắc nghiệm về chủ đề: "${source.content}".
+         YÊU CẦU QUAN TRỌNG:
+         - KHÔNG hỏi những câu hỏi phổ biến nhất. Hãy tìm các khía cạnh cụ thể, chi tiết hoặc nâng cao.
+         - Đổi mới hoàn toàn so với các lần trước.
+         - Seed ngẫu nhiên: ${randomSeed}-${Date.now()}.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
