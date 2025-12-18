@@ -1,4 +1,8 @@
 # RockExam
+<img width="1902" height="1079" alt="image" src="https://github.com/user-attachments/assets/2e22539f-9d0f-4095-ab0d-48c516cb35ad" />
+
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/ae332bbb-ab2e-4fc9-9c0d-5615bdf0ea29" />
+
 
 ## Project Overview
 RockExam is a React-based web application designed to generate interactive quizzes using Artificial Intelligence. It leverages Google's Gemini AI to analyze text inputs or PDF documents and create multiple-choice questions. The application is optimized for various learning scenarios, including a specialized mode for Japanese Language Proficiency Test (JLPT) preparation, and features a distinctive industrial/geometric design system with a "Matrix Rain" background effect.
