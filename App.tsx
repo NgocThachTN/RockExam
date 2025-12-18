@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import InputSection from './components/InputSection';
-import QuizView from './components/QuizView';
+import QuizView from './pages/QuizView/QuizView';
 import { generateQuiz } from './services/gemini';
 import { Question } from './types';
 
