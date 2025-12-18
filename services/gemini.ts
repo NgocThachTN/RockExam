@@ -49,13 +49,14 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
       LOGIC:
       1. TIẾNG NHẬT (JLPT):
          - BẮT BUỘC theo format JLPT:
-           + Mojigoi (Từ vựng/Kanji): Hỏi cách đọc (Hiragana) hoặc Kanji đúng.
+           + Mojigoi (Từ vựng/Kanji): Hỏi cách đọc (Hiragana) hoặc Kanji đúng. TỪ CẦN HỎI phải để trong ngoặc vuông [ ] để gạch chân.
            + Bunpou (Ngữ pháp): Điền trợ từ/động từ vào "(___)".
            + Dokkai (Đọc hiểu): Đoạn văn ngắn + câu hỏi nội dung.
       2. Ngoại ngữ khác (TOEIC...): Hỏi từ vựng [từ], ngữ pháp, đọc hiểu.
       3. Chuyên môn (Sử, IT...): Hỏi kiến thức, logic. KHÔNG hỏi ngữ pháp.
       
       FORMAT:
+      - TỪ VỰNG/KANJI (Bắt buộc): Đặt từ cần hỏi trong ngoặc vuông [ ] (Ví dụ: [漢字]の読み方...).
       - Điền từ: "(___)"
       - KHÔNG Markdown.
       - Giải thích: Tiếng Việt chi tiết.
