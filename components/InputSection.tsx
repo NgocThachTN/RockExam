@@ -108,10 +108,10 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
         </button>
       </div>
 
-      <div className={`p-10 bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 sharp-shadow ${showLoader ? 'opacity-50 pointer-events-none' : ''}`}>
+      <div className={`p-10 bg-sky-50 dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 sharp-shadow ${showLoader ? 'opacity-50 pointer-events-none' : ''}`}>
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest">Quy mô đề thi</label>
+            <label className="text-[10px] font-black uppercase text-zinc-900 dark:text-zinc-100 tracking-widest">Quy mô đề thi</label>
             <span className="font-mono text-xs font-bold">{count} câu hỏi</span>
           </div>
           <div className="grid grid-cols-4 gap-2">
@@ -130,15 +130,15 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
         {tab === 'pdf' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest mb-4">Ghi chú cho AI (Tùy chọn)</label>
+              <label className="block text-[10px] font-black uppercase text-zinc-900 dark:text-zinc-100 tracking-widest mb-4">Ghi chú cho AI (Tùy chọn)</label>
               <textarea
                 placeholder="VD: Chỉ trích xuất phần ngữ pháp, tập trung vào chương 3..."
                 value={pdfNote}
                 onChange={(e) => setPdfNote(e.target.value)}
-                className="w-full h-24 p-4 bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 resize-none font-medium text-zinc-900 dark:text-zinc-100 text-sm mb-4"
+                className="w-full h-24 p-4 bg-white dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 resize-none font-medium text-zinc-900 dark:text-zinc-100 text-sm mb-4"
               />
             </div>
-            <div className="relative border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 p-16 text-center group hover:border-zinc-900 dark:hover:border-zinc-100 transition-colors cursor-pointer">
+            <div className="relative border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950/50 p-16 text-center group hover:border-zinc-900 dark:hover:border-zinc-100 transition-colors cursor-pointer">
               <input type="file" accept=".pdf" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={showLoader} />
               <div className="flex flex-col items-center">
                 <svg className="w-10 h-10 mb-4 text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-900 dark:group-hover:text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -154,7 +154,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
               placeholder="Nhập yêu cầu chi tiết cho AI..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="w-full h-40 p-6 bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 resize-none font-medium text-zinc-900 dark:text-zinc-100 text-sm leading-relaxed"
+              className="w-full h-40 p-6 bg-white dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 resize-none font-medium text-zinc-900 dark:text-zinc-100 text-sm leading-relaxed"
             />
             <button 
               onClick={handleCommandSubmit}
@@ -169,19 +169,19 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
         {tab === 'mock' && (
           <div className="space-y-6">
             <div>
-              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest mb-4">Chủ đề thi thử</label>
+              <label className="block text-[10px] font-black uppercase text-zinc-900 dark:text-zinc-100 tracking-widest mb-4">Chủ đề thi thử</label>
               <input
                 type="text"
                 placeholder="VD: Lịch sử Việt Nam, Toán lớp 12, Tiếng Anh TOEIC..."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="w-full p-4 bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 font-medium text-zinc-900 dark:text-zinc-100 text-sm"
+                className="w-full p-4 bg-white dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 font-medium text-zinc-900 dark:text-zinc-100 text-sm"
               />
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-4">
-                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest">Thời gian làm bài</label>
+                <label className="text-[10px] font-black uppercase text-zinc-900 dark:text-zinc-100 tracking-widest">Thời gian làm bài</label>
                 <span className="font-mono text-xs font-bold">{timeLimit} phút</span>
               </div>
               <div className="grid grid-cols-4 gap-2">

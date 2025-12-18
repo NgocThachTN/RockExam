@@ -90,7 +90,7 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart, timeLimit }) 
                   const isCorrect = userAnswer === q.correctIndex;
                   
                   return (
-                      <div key={index} className={`bg-white dark:bg-zinc-900 border-2 p-6 ${isCorrect ? 'border-zinc-200 dark:border-zinc-800' : 'border-red-500 dark:border-red-500'}`}>
+                      <div key={index} className={`bg-sky-50 dark:bg-zinc-900 border-2 p-6 ${isCorrect ? 'border-zinc-200 dark:border-zinc-800' : 'border-red-500 dark:border-red-500'}`}>
                           <div className="flex items-start gap-4">
                               <div className={`shrink-0 w-8 h-8 flex items-center justify-center font-black text-sm border-2 ${isCorrect ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-950' : 'bg-red-500 text-white border-red-500'}`}>
                                   {index + 1}

@@ -6,49 +6,61 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
 export async function generateQuiz(source: { type: 'text' | 'prompt', content: string, note?: string }, count: number = 5): Promise<Question[]> {
   try {
-    // Increased substring limit from 18,000 to 250,000 characters to support very long documents
-    const contentLimit = 250000;
+    // Optimized limit to save quota (~15k tokens max)
+    const contentLimit = 60000;
     
+    let processedContent = source.content;
+    if (source.type === 'text' && source.content.length > contentLimit) {
+      // Smart sampling: Take start, middle, and end segments to represent the document better
+      const segmentSize = 20000;
+      const midPoint = Math.floor(source.content.length / 2);
+      processedContent = 
+        source.content.substring(0, segmentSize) + 
+        "\n\n...[ĐOẠN GIỮA]...\n\n" +
+        source.content.substring(midPoint - segmentSize / 2, midPoint + segmentSize / 2) +
+        "\n\n...[ĐOẠN CUỐI]...\n\n" +
+        source.content.substring(source.content.length - segmentSize);
+    }
+
     // Generate a random strategy to force diversity
     const strategies = [
-      "Tập trung vào các định nghĩa, khái niệm chính và ý nghĩa của chúng.",
-      "Tập trung vào mối quan hệ nguyên nhân - kết quả và các lập luận logic.",
-      "Chọn ngẫu nhiên các đoạn văn từ giữa hoặc cuối văn bản để đặt câu hỏi.",
-      "Điền từ vào chỗ trống hoặc sắp xếp trật tự từ trong câu."
+      "Tập trung vào định nghĩa, khái niệm chính.",
+      "Tập trung vào quan hệ nguyên nhân - kết quả.",
+      "Chọn ngẫu nhiên đoạn văn từ giữa/cuối.",
+      "Điền từ hoặc sắp xếp câu."
     ];
     const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
     const randomSeed = Math.floor(Math.random() * 1000000);
 
     const instruction = source.type === 'text' 
-      ? `Tạo ${count} câu hỏi trắc nghiệm từ tài liệu sau.
+      ? `Tạo ${count} câu hỏi trắc nghiệm.
          CHIẾN LƯỢC: "${randomStrategy}"
-         ${source.note ? `GHI CHÚ QUAN TRỌNG TỪ NGƯỜI DÙNG: "${source.note}" (Hãy ưu tiên tuân thủ ghi chú này)` : ''}
-         YÊU CẦU: 
-         - Chọn khía cạnh ngẫu nhiên, TRÁNH trùng lặp.
-         - Seed: ${randomSeed}.
-         NỘI DUNG: ${source.content.substring(0, contentLimit)}`
-      : `Tạo ${count} câu hỏi trắc nghiệm từ yêu cầu: "${source.content}" (Seed: ${randomSeed})`;
+         ${source.note ? `GHI CHÚ: "${source.note}" (Ưu tiên cao nhất)` : ''}
+         YÊU CẦU: Chọn ý ngẫu nhiên, TRÁNH trùng lặp. Seed: ${randomSeed}.
+         NỘI DUNG: ${processedContent}`
+      : `Tạo ${count} câu hỏi từ: "${source.content}" (Seed: ${randomSeed})`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `${instruction}
       
-      QUY ĐỊNH JSON:
-      - Trả về danh sách "Nhóm câu hỏi" (type: "single" hoặc "reading").
-      - "reading": có trường "passage".
-      - "questions": mảng các câu hỏi.
+      OUTPUT JSON: Danh sách nhóm câu hỏi (type: "single"|"reading"). "reading" có "passage".
       
-      QUY ĐỊNH NỘI DUNG:
-      - PHÂN TÍCH TÀI LIỆU ĐỂ CHỌN LOẠI CÂU HỎI:
-        1. Nếu là tài liệu học ngoại ngữ (VD: Luyện thi JLPT, TOEIC): Tập trung vào từ vựng, ngữ pháp, đọc hiểu.
-        2. Nếu là tài liệu kiến thức chuyên môn (VD: Lịch sử, Địa lý, IT, Y học...): Tập trung hỏi về kiến thức, sự kiện, khái niệm, logic. KHÔNG hỏi về ngữ pháp/từ vựng.
+      LOGIC:
+      1. TIẾNG NHẬT (JLPT):
+         - BẮT BUỘC theo format JLPT:
+           + Mojigoi (Từ vựng/Kanji): Hỏi cách đọc (Hiragana) hoặc Kanji đúng.
+           + Bunpou (Ngữ pháp): Điền trợ từ/động từ vào "(___)".
+           + Dokkai (Đọc hiểu): Đoạn văn ngắn + câu hỏi nội dung.
+      2. Ngoại ngữ khác (TOEIC...): Hỏi từ vựng [từ], ngữ pháp, đọc hiểu.
+      3. Chuyên môn (Sử, IT...): Hỏi kiến thức, logic. KHÔNG hỏi ngữ pháp.
       
-      - ĐỊNH DẠNG CHUNG:
-        - TỪ VỰNG (chỉ dùng cho loại 1): Đặt từ cần hỏi trong ngoặc vuông [ ].
-        - ĐIỀN TỪ: Dùng ký hiệu "(___)" để biểu thị chỗ trống.
-        - KHÔNG dùng Markdown (**in đậm**).
-        - Giải thích: Tiếng Việt chi tiết.
-        - Câu hỏi/Đáp án: Giữ nguyên ngôn ngữ của văn bản gốc (hoặc Tiếng Việt nếu văn bản là Tiếng Việt).
+      FORMAT:
+      - Điền từ: "(___)"
+      - KHÔNG Markdown.
+      - Giải thích: Tiếng Việt chi tiết.
+        * ĐẶC BIỆT VỚI TIẾNG NHẬT: Giải thích phải bao gồm cách đọc Hiragana của Kanji và nghĩa tiếng Việt.
+      - Câu hỏi/Đáp án: Giữ nguyên ngôn ngữ gốc.
       `,
       config: {
         temperature: 0.9,
@@ -89,8 +101,24 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
     for (const group of rawData) {
       if (group.questions && Array.isArray(group.questions)) {
         for (const q of group.questions) {
+          // Shuffle options to prevent "Always A" bias from AI
+          const options = [...(q.options || [])];
+          let correctIndex = q.correctIndex;
+
+          if (options.length > 0 && typeof correctIndex === 'number' && correctIndex >= 0 && correctIndex < options.length) {
+             const correctOption = options[correctIndex];
+             // Fisher-Yates shuffle
+             for (let i = options.length - 1; i > 0; i--) {
+               const j = Math.floor(Math.random() * (i + 1));
+               [options[i], options[j]] = [options[j], options[i]];
+             }
+             correctIndex = options.indexOf(correctOption);
+          }
+
           flattenedQuestions.push({
             ...q,
+            options,
+            correctIndex,
             type: group.type === 'reading' ? 'reading' : 'multiple-choice',
             passage: group.type === 'reading' ? group.passage : undefined
           });

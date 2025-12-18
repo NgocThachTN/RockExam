@@ -42,7 +42,7 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
     <div className="max-w-3xl mx-auto">
       {/* HUD Progress Bar */}
       <div className="mb-6 md:mb-8">
-        <div className="flex justify-between items-end mb-2 font-mono text-[10px] font-black uppercase tracking-widest text-zinc-400">
+        <div className="flex justify-between items-end mb-2 font-mono text-[10px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">
           <span>Tiến độ</span>
           <span>{currentIndex + 1} / {totalQuestions}</span>
         </div>
