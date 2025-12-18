@@ -2,6 +2,7 @@ import React from 'react';
 import InputSection from '../../components/InputSection';
 import Hero from './components/Hero';
 import InfoSection from './components/InfoSection';
+import './Home.css';
 
 interface HomeProps {
   onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number) => Promise<void>;

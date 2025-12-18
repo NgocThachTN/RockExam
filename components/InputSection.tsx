@@ -134,7 +134,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
               disabled={showLoader}
               className="w-full py-5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-black uppercase text-xs tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-white transition-all disabled:opacity-50"
             >
-              Phát hành đề thi
+              Tạo Quiz
             </button>
           </div>
         )}
