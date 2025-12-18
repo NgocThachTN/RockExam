@@ -16,7 +16,7 @@ const App: React.FC = () => {
     else document.documentElement.classList.remove('dark');
   }, [darkMode]);
 
-  const handleGenerate = async (source: { type: 'text' | 'prompt', content: string }, count: number, time?: number) => {
+  const handleGenerate = async (source: { type: 'text' | 'prompt', content: string, note?: string }, count: number, time?: number) => {
     setIsLoading(true);
     setTimeLimit(time || null);
     try {

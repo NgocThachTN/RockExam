@@ -2,13 +2,14 @@
 import React, { useState } from 'react';
 
 interface InputSectionProps {
-  onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number, time?: number) => void;
+  onGenerate: (source: { type: 'text' | 'prompt', content: string, note?: string }, count: number, time?: number) => void;
   isLoading: boolean;
 }
 
 const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) => {
   const [tab, setTab] = useState<'pdf' | 'command' | 'mock'>('pdf');
   const [prompt, setPrompt] = useState('');
+  const [pdfNote, setPdfNote] = useState('');
   const [count, setCount] = useState(5);
   const [timeLimit, setTimeLimit] = useState(15);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
           }
 
           setIsParsing(false);
-          onGenerate({ type: 'text', content: fullText }, count);
+          onGenerate({ type: 'text', content: fullText, note: pdfNote }, count);
         } catch (innerErr: any) {
           setError(innerErr.message || 'Lỗi xử lý PDF.');
           setIsParsing(false);
@@ -128,6 +129,15 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
 
         {tab === 'pdf' && (
           <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest mb-4">Ghi chú cho AI (Tùy chọn)</label>
+              <textarea
+                placeholder="VD: Chỉ trích xuất phần ngữ pháp, tập trung vào chương 3..."
+                value={pdfNote}
+                onChange={(e) => setPdfNote(e.target.value)}
+                className="w-full h-24 p-4 bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 resize-none font-medium text-zinc-900 dark:text-zinc-100 text-sm mb-4"
+              />
+            </div>
             <div className="relative border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 p-16 text-center group hover:border-zinc-900 dark:hover:border-zinc-100 transition-colors cursor-pointer">
               <input type="file" accept=".pdf" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={showLoader} />
               <div className="flex flex-col items-center">

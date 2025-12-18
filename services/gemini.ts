@@ -4,7 +4,7 @@ import { Question } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
-export async function generateQuiz(source: { type: 'text' | 'prompt', content: string }, count: number = 5): Promise<Question[]> {
+export async function generateQuiz(source: { type: 'text' | 'prompt', content: string, note?: string }, count: number = 5): Promise<Question[]> {
   try {
     // Increased substring limit from 18,000 to 250,000 characters to support very long documents
     const contentLimit = 250000;
@@ -22,6 +22,7 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
     const instruction = source.type === 'text' 
       ? `Tạo ${count} câu hỏi trắc nghiệm từ tài liệu sau.
          CHIẾN LƯỢC: "${randomStrategy}"
+         ${source.note ? `GHI CHÚ QUAN TRỌNG TỪ NGƯỜI DÙNG: "${source.note}" (Hãy ưu tiên tuân thủ ghi chú này)` : ''}
          YÊU CẦU: 
          - Chọn khía cạnh ngẫu nhiên, TRÁNH trùng lặp.
          - Seed: ${randomSeed}.
