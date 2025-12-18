@@ -63,12 +63,12 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
   return (
     <div className="max-w-3xl mx-auto">
       {/* HUD Progress Bar */}
-      <div className="mb-8 md:mb-12">
-        <div className="flex justify-between items-end mb-3 font-mono text-[10px] font-black uppercase tracking-widest text-zinc-400">
+      <div className="mb-6 md:mb-8">
+        <div className="flex justify-between items-end mb-2 font-mono text-[10px] font-black uppercase tracking-widest text-zinc-400">
           <span>Tiến độ</span>
           <span>{currentIndex + 1} / {questions.length}</span>
         </div>
-        <div className="h-3 w-full bg-zinc-200 dark:bg-zinc-800 border-2 border-zinc-900 dark:border-zinc-700 p-0.5 overflow-hidden rounded-full">
+        <div className="h-2.5 w-full bg-zinc-200 dark:bg-zinc-800 border-2 border-zinc-900 dark:border-zinc-700 p-0.5 overflow-hidden rounded-full">
           <div className="h-full bg-zinc-900 dark:bg-zinc-100 transition-all duration-500 ease-out rounded-full" style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }} />
         </div>
       </div>
@@ -77,9 +77,9 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
       <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 p-6 md:p-10 sharp-shadow relative">
           
           {/* Question */}
-          <div className="mb-8 md:mb-10 text-center">
-             <h3 className="text-xl md:text-2xl font-black leading-snug uppercase tracking-tight text-zinc-900 dark:text-zinc-100 max-w-2xl mx-auto [text-wrap:balance]">
-                {q.question}
+          <div className="mb-8 md:mb-10 text-left">
+             <h3 className="text-xl md:text-2xl font-black leading-snug uppercase tracking-tight text-zinc-900 dark:text-zinc-100 w-full">
+                Câu {currentIndex + 1}: {q.question}
              </h3>
           </div>
 
