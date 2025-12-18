@@ -37,10 +37,10 @@ const App: React.FC = () => {
       <nav className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-white dark:bg-zinc-900 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center h-14 px-4 md:px-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-black text-white dark:text-zinc-950 text-sm transform rotate-3">AI</div>
+            <div className="w-9 h-9 bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-black text-white dark:text-zinc-950 text-sm transform rotate-3">RE</div>
             <div className="flex flex-col">
-              <h1 className="font-black text-xl uppercase tracking-tighter leading-none">EXAM</h1>
-              <span className="text-[8px] font-mono tracking-[0.3em] font-bold text-zinc-500">ENGINE v2.0</span>
+              <h1 className="font-black text-xl uppercase tracking-tighter leading-none">RockExam</h1>
+              <span className="text-[8px] font-mono tracking-[0.3em] font-bold text-zinc-500">ENGINE v1.0.0</span>
             </div>
           </div>
           
