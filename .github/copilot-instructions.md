@@ -22,6 +22,7 @@
 - **Environment Setup**: 
   - Create `.env` with `GEMINI_API_KEY`.
   - `vite.config.ts` maps this to `process.env.API_KEY` (unusual for Vite, but configured via `define`).
+  - **Security**: Tuyệt đối bảo mật API Key. KHÔNG BAO GIỜ hardcode key vào file source code hoặc commit file `.env` lên git. Luôn sử dụng biến môi trường.
 - **PDF Parsing**:
   - Do NOT import `pdfjs-dist`.
   - Access via `window.pdfjsLib` (types require `@ts-ignore` or global declaration).
