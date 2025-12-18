@@ -29,7 +29,7 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
       : `Tạo ${count} câu hỏi trắc nghiệm từ yêu cầu: "${source.content}" (Seed: ${randomSeed})`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: `${instruction}
       
       QUY ĐỊNH JSON:
