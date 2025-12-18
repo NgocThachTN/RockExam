@@ -5,7 +5,7 @@ import InfoSection from './components/InfoSection';
 import './Home.css';
 
 interface HomeProps {
-  onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number) => Promise<void>;
+  onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number, time?: number) => Promise<void>;
   isLoading: boolean;
 }
 

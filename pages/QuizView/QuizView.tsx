@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Question } from '../../types';
 import StandardQuestion from './components/StandardQuestion';
 import ReadingQuestion from './components/ReadingQuestion';
@@ -7,16 +7,41 @@ import ReadingQuestion from './components/ReadingQuestion';
 interface QuizViewProps {
   questions: Question[];
   onRestart: () => void;
+  timeLimit?: number | null;
 }
 
-const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
+const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart, timeLimit }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(timeLimit ? timeLimit * 60 : null);
 
   const [userAnswers, setUserAnswers] = useState<(number | null)[]>([]);
+
+  useEffect(() => {
+    if (timeLeft === null || finished) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev !== null && prev <= 1) {
+          clearInterval(timer);
+          setFinished(true);
+          return 0;
+        }
+        return prev !== null ? prev - 1 : null;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, finished]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const q = questions[currentIndex];
 
@@ -32,12 +57,25 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
 
   const handleCheck = () => {
     if (selected === null) return;
-    setIsAnswered(true);
-    if (selected === q.correctIndex) setScore(s => s + 1);
     
     const newAnswers = [...userAnswers];
     newAnswers[currentIndex] = selected;
     setUserAnswers(newAnswers);
+
+    if (selected === q.correctIndex) setScore(s => s + 1);
+
+    if (timeLimit) {
+      // Mock mode: Move to next question immediately without showing result
+      if (currentIndex < questions.length - 1) {
+        setCurrentIndex(c => c + 1);
+        setSelected(null);
+      } else {
+        setFinished(true);
+      }
+    } else {
+      // Practice mode: Show result
+      setIsAnswered(true);
+    }
   };
 
   if (finished) {
@@ -120,9 +158,25 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
     );
   }
 
-  if (q.type === 'reading' && q.passage) {
+  const renderContent = () => {
+    if (q.type === 'reading' && q.passage) {
+      return (
+        <ReadingQuestion
+          question={q}
+          currentIndex={currentIndex}
+          totalQuestions={questions.length}
+          selected={selected}
+          isAnswered={isAnswered}
+          onSelect={setSelected}
+          onCheck={handleCheck}
+          onNext={handleNext}
+          isMock={!!timeLimit}
+        />
+      );
+    }
+
     return (
-      <ReadingQuestion
+      <StandardQuestion
         question={q}
         currentIndex={currentIndex}
         totalQuestions={questions.length}
@@ -131,21 +185,20 @@ const QuizView: React.FC<QuizViewProps> = ({ questions, onRestart }) => {
         onSelect={setSelected}
         onCheck={handleCheck}
         onNext={handleNext}
+        isMock={!!timeLimit}
       />
     );
-  }
+  };
 
   return (
-    <StandardQuestion
-      question={q}
-      currentIndex={currentIndex}
-      totalQuestions={questions.length}
-      selected={selected}
-      isAnswered={isAnswered}
-      onSelect={setSelected}
-      onCheck={handleCheck}
-      onNext={handleNext}
-    />
+    <div className="relative">
+      {timeLeft !== null && (
+        <div className={`fixed top-20 right-4 md:right-8 z-40 px-4 py-2 font-mono font-black text-xl border-2 shadow-lg transition-colors ${timeLeft < 60 ? 'bg-red-500 text-white border-red-600 animate-pulse' : 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-white dark:border-zinc-900'}`}>
+          {formatTime(timeLeft)}
+        </div>
+      )}
+      {renderContent()}
+    </div>
   );
 };
 

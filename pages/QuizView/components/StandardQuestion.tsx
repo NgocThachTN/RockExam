@@ -10,6 +10,7 @@ interface StandardQuestionProps {
   onSelect: (index: number) => void;
   onCheck: () => void;
   onNext: () => void;
+  isMock?: boolean;
 }
 
 const StandardQuestion: React.FC<StandardQuestionProps> = ({
@@ -21,6 +22,7 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
   onSelect,
   onCheck,
   onNext,
+  isMock
 }) => {
   const renderQuestionText = (text: string) => {
     const parts = text.split(/(\[.*?\])/g);
@@ -109,7 +111,7 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
                   disabled={selected === null}
                   className="w-full md:w-auto px-12 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-black uppercase tracking-widest text-sm disabled:opacity-20 hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
                 >
-                  CHỐT ĐÁP ÁN
+                  {isMock ? (currentIndex < totalQuestions - 1 ? 'CÂU TIẾP THEO' : 'NỘP BÀI') : 'CHỐT ĐÁP ÁN'}
                 </button>
               ) : (
                 <button

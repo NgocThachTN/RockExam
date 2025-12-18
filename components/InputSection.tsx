@@ -2,14 +2,15 @@
 import React, { useState } from 'react';
 
 interface InputSectionProps {
-  onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number) => void;
+  onGenerate: (source: { type: 'text' | 'prompt', content: string }, count: number, time?: number) => void;
   isLoading: boolean;
 }
 
 const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) => {
-  const [tab, setTab] = useState<'pdf' | 'command'>('pdf');
+  const [tab, setTab] = useState<'pdf' | 'command' | 'mock'>('pdf');
   const [prompt, setPrompt] = useState('');
   const [count, setCount] = useState(5);
+  const [timeLimit, setTimeLimit] = useState(15);
   const [error, setError] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [parsingProgress, setParsingProgress] = useState(0);
@@ -73,6 +74,14 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
     onGenerate({ type: 'prompt', content: prompt }, count);
   };
 
+  const handleMockSubmit = () => {
+    if (prompt.trim().length < 3) {
+      setError('Vui lòng nhập chủ đề thi thử.');
+      return;
+    }
+    onGenerate({ type: 'prompt', content: `Tạo đề thi thử về chủ đề: ${prompt}` }, count, timeLimit);
+  };
+
   const showLoader = isLoading || isParsing;
 
   return (
@@ -89,6 +98,12 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
           className={`flex-1 py-4 font-black text-xs uppercase tracking-[0.2em] transition-all ${tab === 'command' ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}`}
         >
           Câu lệnh AI
+        </button>
+        <button 
+          onClick={() => setTab('mock')}
+          className={`flex-1 py-4 font-black text-xs uppercase tracking-[0.2em] transition-all ${tab === 'mock' ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}`}
+        >
+          Thi Thử
         </button>
       </div>
 
@@ -111,7 +126,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
           </div>
         </div>
 
-        {tab === 'pdf' ? (
+        {tab === 'pdf' && (
           <div className="space-y-4">
             <div className="relative border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 p-16 text-center group hover:border-zinc-900 dark:hover:border-zinc-100 transition-colors cursor-pointer">
               <input type="file" accept=".pdf" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={showLoader} />
@@ -121,7 +136,9 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {tab === 'command' && (
           <div className="space-y-4">
             <textarea
               placeholder="Nhập yêu cầu chi tiết cho AI..."
@@ -135,6 +152,47 @@ const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) =>
               className="w-full py-5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-black uppercase text-xs tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-white transition-all disabled:opacity-50"
             >
               Tạo Quiz
+            </button>
+          </div>
+        )}
+
+        {tab === 'mock' && (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest mb-4">Chủ đề thi thử</label>
+              <input
+                type="text"
+                placeholder="VD: Lịch sử Việt Nam, Toán lớp 12, Tiếng Anh TOEIC..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="w-full p-4 bg-zinc-50 dark:bg-zinc-950/50 border-2 border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-100 font-medium text-zinc-900 dark:text-zinc-100 text-sm"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <label className="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-widest">Thời gian làm bài</label>
+                <span className="font-mono text-xs font-bold">{timeLimit} phút</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {[15, 30, 45, 60].map(t => (
+                  <button 
+                    key={t}
+                    onClick={() => setTimeLimit(t)}
+                    className={`py-3 font-mono text-sm border-2 transition-all ${timeLimit === t ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-100' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-900 dark:hover:border-zinc-100'}`}
+                  >
+                    {t}p
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button 
+              onClick={handleMockSubmit}
+              disabled={showLoader}
+              className="w-full py-5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-black uppercase text-xs tracking-[0.3em] hover:bg-zinc-800 dark:hover:bg-white transition-all disabled:opacity-50"
+            >
+              Bắt đầu thi thử
             </button>
           </div>
         )}

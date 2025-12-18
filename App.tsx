@@ -9,14 +9,16 @@ const App: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [timeLimit, setTimeLimit] = useState<number | null>(null);
 
   useEffect(() => {
     if (darkMode) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
   }, [darkMode]);
 
-  const handleGenerate = async (source: { type: 'text' | 'prompt', content: string }, count: number) => {
+  const handleGenerate = async (source: { type: 'text' | 'prompt', content: string }, count: number, time?: number) => {
     setIsLoading(true);
+    setTimeLimit(time || null);
     try {
       const result = await generateQuiz(source, count);
       setQuestions(result);
@@ -29,6 +31,7 @@ const App: React.FC = () => {
 
   const reset = () => {
     setQuestions([]);
+    setTimeLimit(null);
   };
 
   return (
@@ -71,7 +74,7 @@ const App: React.FC = () => {
         <Home onGenerate={handleGenerate} isLoading={isLoading} />
       ) : (
         <main className="px-6 mt-8">
-          <QuizView questions={questions} onRestart={reset} />
+          <QuizView questions={questions} onRestart={reset} timeLimit={timeLimit} />
         </main>
       )}
       
