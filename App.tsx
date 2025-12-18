@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home/Home';
 import QuizView from './pages/QuizView/QuizView';
+import MatrixRain from './components/MatrixRain';
 import { generateQuiz } from './services/gemini';
 import { Question } from './types';
 
@@ -35,7 +36,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-950">
+    <div className="min-h-screen pb-20 selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-zinc-950 relative">
+      <MatrixRain />
+      <div className="relative z-10">
       {/* Heavy Geometric Header */}
       <nav className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-sky-50 dark:bg-zinc-900 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center h-14 px-4 md:px-6">
@@ -81,6 +84,7 @@ const App: React.FC = () => {
       {/* Industrial Grid Background */}
       <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-[0.03] dark:opacity-[0.05]">
         <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'linear-gradient(90deg, #000 2px, transparent 2px), linear-gradient(#000 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
+      </div>
       </div>
     </div>
   );
