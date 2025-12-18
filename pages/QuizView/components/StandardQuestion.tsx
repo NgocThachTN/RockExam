@@ -60,7 +60,7 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
           </div>
 
           {/* Options */}
-          <div className="grid gap-3 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             {q.options.map((opt, i) => {
               const isCorrect = i === q.correctIndex;
               const isSelected = i === selected;
