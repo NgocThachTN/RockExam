@@ -8,38 +8,49 @@ export async function generateQuiz(source: { type: 'text' | 'prompt', content: s
   try {
     // Increased substring limit from 18,000 to 250,000 characters to support very long documents
     const contentLimit = 250000;
+    
+    // Generate a random strategy to force diversity
+    const strategies = [
+      "JLPT Ngữ pháp (Bunpou): Trợ từ, chia động từ, cấu trúc câu, kính ngữ.",
+      "JLPT Từ vựng (Goi/Kanji): Cách đọc, ý nghĩa, từ gần nghĩa, cách dùng từ.",
+      "JLPT Đọc hiểu (Dokkai): Ý chính, đại từ chỉ định, lý do, nội dung chi tiết.",
+      "Tập trung vào các định nghĩa, khái niệm chính và ý nghĩa của chúng.",
+      "Tập trung vào mối quan hệ nguyên nhân - kết quả và các lập luận logic.",
+      "Chọn ngẫu nhiên các đoạn văn từ giữa hoặc cuối văn bản để đặt câu hỏi.",
+      "Điền từ vào chỗ trống hoặc sắp xếp trật tự từ trong câu (Mondai sắp xếp)."
+    ];
+    const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
+    const randomSeed = Math.floor(Math.random() * 1000000);
+
     const instruction = source.type === 'text' 
-      ? `Dựa trên nội dung tài liệu sau đây, hãy tạo ra ${count} câu hỏi trắc nghiệm ôn thi: \n\n ${source.content.substring(0, contentLimit)}`
-      : `Hãy tạo ra một đề thi trắc nghiệm gồm ${count} câu hỏi dựa trên yêu cầu sau: "${source.content}"`;
+      ? `Tạo ${count} câu hỏi trắc nghiệm từ tài liệu sau.
+         CHIẾN LƯỢC: "${randomStrategy}"
+         YÊU CẦU: 
+         - Chọn khía cạnh ngẫu nhiên, TRÁNH trùng lặp.
+         - Seed: ${randomSeed}.
+         NỘI DUNG: ${source.content.substring(0, contentLimit)}`
+      : `Tạo ${count} câu hỏi trắc nghiệm từ yêu cầu: "${source.content}" (Chiến lược: "${randomStrategy}", Seed: ${randomSeed})`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `${instruction}
       
-      YÊU CẦU QUAN TRỌNG:
-      - Cấu trúc trả về là một danh sách các "Nhóm câu hỏi".
-      - Mỗi nhóm có thể là một câu hỏi đơn lẻ hoặc một bài đọc hiểu kèm theo nhiều câu hỏi.
-      - Ngôn ngữ: 
-        + Giải thích (explanation): Luôn luôn là Tiếng Việt.
-        + Câu hỏi (question) và Đáp án (options): 
-          * Nếu là môn Tiếng Việt hoặc kiến thức chung: Tiếng Việt.
-          * Nếu là môn ngoại ngữ (Tiếng Anh, Tiếng Nhật...): Sử dụng chính ngôn ngữ đó.
-      - ĐẶC BIỆT: Nếu nội dung liên quan đến chữ Hán (Kanji) hoặc tiếng Nhật, trong phần giải thích (explanation), hãy viết kèm cách đọc bằng Hiragana ngay sau chữ Hán đó.
+      QUY ĐỊNH JSON:
+      - Trả về danh sách "Nhóm câu hỏi" (type: "single" hoặc "reading").
+      - "reading": có trường "passage".
+      - "questions": mảng các câu hỏi.
       
-      ĐỊNH DẠNG JSON:
-      Trả về một mảng các object (Nhóm), mỗi object có:
-      - "type": "single" (câu đơn) hoặc "reading" (bài đọc hiểu).
-      - "passage": Nội dung bài đọc (chỉ bắt buộc nếu type="reading").
-      - "questions": Danh sách các câu hỏi thuộc nhóm này.
-      
-      VỚI BÀI ĐỌC HIỂU (Reading/Dokkai):
-      - Tùy thuộc vào nội dung, có thể tạo:
-        + Một đoạn văn ngắn đi kèm 1 câu hỏi.
-        + HOẶC một bài đọc dài đi kèm nhiều câu hỏi (2-5 câu).
-      - Đặt "type": "reading".
-      - Điền nội dung bài đọc vào trường "passage".
+      QUY ĐỊNH NỘI DUNG:
+      - ƯU TIÊN ĐỊNH DẠNG JLPT nếu nội dung là tiếng Nhật.
+      - TỪ VỰNG/KANJI: Đặt từ cần hỏi trong ngoặc vuông [ ]. Ví dụ: "Cách đọc của [導入] là gì?".
+      - ĐIỀN TỪ/NGỮ PHÁP: Dùng ký hiệu "(___)" để biểu thị chỗ trống. Ví dụ: "熱い(___)に、召し上がってください。".
+      - KHÔNG dùng Markdown (**in đậm**).
+      - Giải thích: Tiếng Việt chi tiết, giải thích ngữ pháp/từ vựng liên quan.
+      - Câu hỏi/Đáp án: Tiếng Nhật (nếu là đề thi tiếng Nhật) hoặc Tiếng Việt.
+      - Kanji/Tiếng Nhật: Kèm Hiragana trong giải thích.
       `,
       config: {
+        temperature: 0.9,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,

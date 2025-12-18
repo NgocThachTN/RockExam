@@ -22,6 +22,20 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
   onCheck,
   onNext,
 }) => {
+  const renderQuestionText = (text: string) => {
+    const parts = text.split(/(\[.*?\])/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('[') && part.endsWith(']')) {
+        return (
+          <span key={index} className="border-b-2 border-zinc-900 dark:border-zinc-100 pb-0.5 mx-1 font-bold inline-block">
+            {part.slice(1, -1)}
+          </span>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* HUD Progress Bar */}
@@ -41,7 +55,7 @@ const StandardQuestion: React.FC<StandardQuestionProps> = ({
           {/* Question */}
           <div className="mb-8 md:mb-10 text-left">
              <h3 className="text-xl md:text-2xl font-black leading-snug uppercase tracking-tight text-zinc-900 dark:text-zinc-100 w-full">
-                Câu {currentIndex + 1}: {q.question}
+                Câu {currentIndex + 1}: {renderQuestionText(q.question)}
              </h3>
           </div>
 
