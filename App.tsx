@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import InputSection from './components/InputSection';
+import Home from './pages/Home/Home';
 import QuizView from './pages/QuizView/QuizView';
 import { generateQuiz } from './services/gemini';
 import { Question } from './types';
@@ -67,28 +67,13 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      {questions.length === 0 && !isLoading && (
-        <div className="max-w-4xl mx-auto pt-20 pb-12 px-6">
-          <div className="inline-block bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-6">
-            Học tập thông minh hơn
-          </div>
-          <h2 className="text-6xl md:text-8xl font-black uppercase leading-[0.8] tracking-tighter mb-8 italic">
-            TỰ ĐỘNG <br/> <span className="text-transparent border-text" style={{ WebkitTextStroke: '1px currentColor' }}>HÓA</span> <br/> ÔN TẬP
-          </h2>
-          <p className="max-w-md font-mono text-xs text-zinc-500 uppercase leading-relaxed tracking-wider border-l-2 border-zinc-300 dark:border-zinc-700 pl-4">
-            Hệ thống AI chuyên sâu giúp bạn trích xuất kiến thức từ PDF và tạo đề thi trắc nghiệm ngay lập tức.
-          </p>
-        </div>
-      )}
-
-      <main className="px-6 mt-8">
-        {questions.length === 0 ? (
-          <InputSection onGenerate={handleGenerate} isLoading={isLoading} />
-        ) : (
+      {questions.length === 0 ? (
+        <Home onGenerate={handleGenerate} isLoading={isLoading} />
+      ) : (
+        <main className="px-6 mt-8">
           <QuizView questions={questions} onRestart={reset} />
-        )}
-      </main>
+        </main>
+      )}
       
       {/* Industrial Grid Background */}
       <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden opacity-[0.03] dark:opacity-[0.05]">
