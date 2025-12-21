@@ -59,7 +59,7 @@ RockExam/
 3.  **Environment Configuration**:
     Create a `.env` file in the root directory and add your Google Gemini API Key.
     ```env
-    API_KEY=your_google_gemini_api_key_here
+    GEMINI_API_KEY=your_google_gemini_api_key_here
     ```
     *Note: The application is configured to read this key via `process.env.API_KEY` in `vite.config.ts`.*
 
